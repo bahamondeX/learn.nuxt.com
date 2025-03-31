@@ -17,7 +17,8 @@ const { data: surroundings } = useAsyncData(`${route.path}-surroundings`, () => 
 
 const prev = computed(() => surroundings.value?.[0])
 const next = computed(() => surroundings.value?.[1])
-
+const currentPage = ref<"content" | "agent">("content")
+const setPage = (ind:"content"|"agent")=>currentPage.value = ind
 interface BreadcrumbItem {
   title: string
   path?: string
@@ -81,13 +82,15 @@ router.beforeEach(() => {
 
 <template>
   <div grid="~ rows-[min-content_1fr]" relative h-full>
-    <div flex="~ gap-2 items-center" border="b base dashed" bg-faded px4 py2>
-      <div i-ph-book-duotone />
+    <div flex="~ gap-2 flex flex-row items-center" border="b base dashed" bg-faded px4 py2>
+      <div i-ph-book-duotone @click="setPage('content')"  cursor-pointer  />
       <template v-for="bc, idx of breadcrumbs" :key="bc.path">
         <div v-if="idx !== 0" i-ph-caret-right mx--1 text-sm op50 />
         <NuxtLink :to="bc.path" text-sm hover="text-primary">
           {{ bc.title }}
         </NuxtLink>
+         <div i-ph-chat @click="setPage('agent')" cursor-pointer />
+        <div text-sm hover="text-primary cursor-pointer " @click="setPage('agent')">Agent</div>
       </template>
       <button
         h-full flex-auto
@@ -101,8 +104,9 @@ router.beforeEach(() => {
     </div>
     <div relative h-full of-hidden>
       <article ref="docsEl" class="max-w-none prose" h-full of-auto p6>
-        <ContentRenderer v-if="page" :key="page.id" :value="page" />
-        <div mt8 py2 grid="~ cols-[1fr_1fr] gap-4">
+         <ChatBot v-if="currentPage==='agent'"/>
+        <ContentRenderer v-if="page && currentPage==='content'" :key="page.id" :value="page" />
+        <div mt8 py2 grid="~ cols-[1fr_1fr] gap-4"  v-if="sourceUrl && currentPage==='content'">
           <div>
             <ContentNavCard
               v-if="prev"
@@ -125,9 +129,10 @@ router.beforeEach(() => {
             />
           </div>
         </div>
-        <div border="t base dashed" mt-8 p3>
+       
+        <div border="t base dashed" mt-8 p3  v-if="sourceUrl && currentPage==='content'">
           <NuxtLink
-            v-if="sourceUrl"
+           
             :to="sourceUrl" target="_blank"
             flex="~ items-center gap-2"
             text-inherit op75
@@ -147,7 +152,7 @@ router.beforeEach(() => {
 
           absolute left-0 right-0 top-0 max-h-60vh overflow-y-auto py2 backdrop-blur-10 bg-base important-bg-opacity-80
         >
-          <ContentNavItem v-for="item of navigation" :key="item.path" :item="item" />
+          <ContentNavItem v-for="item of navigation" :key="item.path" :item="item"  />
         </div>
       </Transition>
     </div>

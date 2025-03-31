@@ -2,7 +2,7 @@ import type { Raw } from 'vue'
 import type { GuideMeta, PlaygroundFeatures } from '~/types/guides'
 
 const defaultFeatures = Object.freeze(<PlaygroundFeatures>{
-  fileTree: false,
+  fileTree: true,
   terminal: false,
   navigation: true,
   download: true,
@@ -26,7 +26,7 @@ export const useGuideStore = defineStore('guide', () => {
         ui.panelFileTree = 20
     }
     else if (features.value.fileTree === false) {
-      ui.panelFileTree = 0
+      ui.panelFileTree = 20
     }
 
     if (features.value.terminal === true)
