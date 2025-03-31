@@ -45,6 +45,11 @@ const panelInitFileTree = computed(() => isMounted.value || {
 const panelInitEditor = computed(() => isMounted.value || {
   width: `${100 - ui.panelFileTree}%`,
 })
+
+const content = computed(() => {
+  if (!play.fileSelected) return ""
+  return play.fileSelected.read()
+})
 </script>
 
 <template>
